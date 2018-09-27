@@ -22,8 +22,6 @@ str(df)
 
 # Lets do some exploratory data analysis :)
 
-
-
 # checking correlations
 require(corrplot)
 cor_matrix = cor(df[,c(-1,-2)],use="complete.obs")
@@ -111,15 +109,12 @@ res<- NbClust(scaled_data, distance = "euclidean", min.nc=2, max.nc=10,
 km.res <- kmeans(scaled_data, 3, nstart = 50)
 
 # Cluster visualisation
-fviz_cluster(km.res, data = scaled_data,
+fviz_cluster(km.res, 
+             data = scaled_data,
              palette = c("#2E9FDF", "#00AFBB", "#E7B800"), 
              ellipse.type = "euclid", 
-             #labelsize = 0.3,
-             #pointsize = 0.1,
-             #geom="point",
              star.plot = TRUE, # Add segments from centroids to items
              repel = TRUE, # Avoid label overplotting (slow)
-             #labelsize = 0.3,
              ggtheme = theme_minimal()
 )
 
@@ -131,15 +126,9 @@ library(rworldmap)
 library(rworldxtra)
 
 cluster = as.numeric(km.res$cluster)
-df[,2]
-cbind(cluster,df$CountryName)
-data.frame(cluster,df$CountryName)
 #we plot to map
-
 par(mfrow=c(1,1))
 spdf = joinCountryData2Map(data.frame(cluster,df$CountryName), joinCode="NAME", nameJoinColumn="df.CountryName",verbose = TRUE,mapResolution = "low")
 mapCountryData(spdf, nameColumnToPlot="cluster", catMethod="fixedWidth",colourPalette=c("#2E9FDF","#00AFBB","#E7B800"), addLegend = FALSE, lwd = 0.5)
-
-
 
 
