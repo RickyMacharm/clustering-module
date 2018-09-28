@@ -2,6 +2,9 @@
 # World Quant University
 # Data Science with R module
 
+###### NOTES & SCRIPT 2 - DATA CLEANING AND ANALYSIS #######
+############################################################
+############################################################
 # Getting the excel data in
 require(gdata)
 df = read.xls (("CountryData.xlsx"), sheet = 1, header = TRUE)
@@ -42,10 +45,10 @@ boxplot(scale(df[,c(-1,-2)]),las=2)
 # Looking at null values
 #we check for NA's in rows
 null_rows = apply(df, 1, function(x) sum(is.na(x)))
+
 #we add the country names
-row_nulls = cbind(df$Country,null_rows)
-row_nulls
-cbind(df$Country,null_rows)
+row_nulls = data.frame(df$CountryName,null_rows)
+
 #we select where not 0
 row_nulls[as.numeric(row_nulls[,2])>0,]
 
@@ -67,6 +70,11 @@ rownames(imputated_data)<-df[,2]
 head(imputated_data)
 str(imputated_data)
 
+
+
+########### NOTES & SCRIPT 3 - MODEL BUILDING ##############
+############################################################
+############################################################
 
 # PCA for our Biplot. Note scale =TRUE as we need to standardize our data
 pca.out<-prcomp(imputated_data,scale=TRUE)
@@ -104,9 +112,19 @@ library(NbClust)
 res<- NbClust(scaled_data, distance = "euclidean", min.nc=2, max.nc=10, 
         method = "kmeans", index = "all")  
 
+# Can access details of the tests here if you like
+res
+
+
+
+############## NOTES & SCRIPT 4 - Data Viz #################
+############################################################
+############################################################
+
 
 # K-means clustering
 km.res <- kmeans(scaled_data, 3, nstart = 50)
+# use ?kmeans in console to explore why we have used nstart = 50
 
 # Cluster visualisation
 fviz_cluster(km.res, 
@@ -117,15 +135,18 @@ fviz_cluster(km.res,
              repel = TRUE, # Avoid label overplotting (slow)
              ggtheme = theme_minimal()
 )
+# use ?fviz_cluster to get more info on this function :)
 
-# Finding the averages 
+# Finding the averages for each cluster
 aggregate(imputated_data, by=list(cluster=km.res$cluster), mean)
 
 
+#Required libraries for world map plotting
 library(rworldmap)
 library(rworldxtra)
 
 cluster = as.numeric(km.res$cluster)
+
 #we plot to map
 par(mfrow=c(1,1))
 spdf = joinCountryData2Map(data.frame(cluster,df$CountryName), joinCode="NAME", nameJoinColumn="df.CountryName",verbose = TRUE,mapResolution = "low")
