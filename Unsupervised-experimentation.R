@@ -70,6 +70,9 @@ rownames(imputated_data)<-df[,2]
 head(imputated_data)
 str(imputated_data)
 
+#we check for nulls in imputed data, success there are none :D
+apply(imputated_data, 2, function(x) sum(is.na(x)))
+
 
 
 ########### NOTES & SCRIPT 3 - MODEL BUILDING ##############
@@ -105,6 +108,12 @@ scaled_data = scale(imputated_data)
 
 # Visualising the dissimalirty matrix. Viually shows distinct clusters. 
 fviz_dist(dist(scaled_data), show_labels = FALSE)+ labs(title = "Euclidean distance")
+
+#plotting just 20 countires :) 
+randomplot <- sample(1:183, 20)
+mydata.sample<- scaled_data[randomplot,]
+fviz_dist(dist(mydata.sample), show_labels = TRUE)+ labs(title = "Euclidean distance")
+
 
 
 # Choosing the number of k
